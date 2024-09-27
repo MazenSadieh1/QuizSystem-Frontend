@@ -1,0 +1,112 @@
+<div class="container">
+  <h2>Frage bearbeiten</h2>
+  <mat-dialog-content class="pt-2" [formGroup]="questionForm">
+    <p><strong>Type:</strong> {{ questionForm.value?.type }}</p>
+
+    <!-- HTML-Code für Multiple Choice -->
+    <div *ngIf="questionForm.get('type')?.value === 'MULTIPLE_CHOICE'">
+      <div class="form-floating col-12 col-md-10 mb-3">
+        <input type="text" class="form-control" formControlName="text">
+        <label>Frage</label>
+      </div>
+      <div formArrayName="answers">
+        <div *ngFor="let answer of answers?.controls; let i = index">
+          <div [formGroupName]="i" class="container card m-2 shadow-lg">
+            <div class="row align-items-center">
+              <div class="form-floating col-8 col-md-6 col-lg-4 m-3">
+                <input type="text" class="form-control" formControlName="text">
+                <label>Antwort: {{ i+1 }}</label>
+              </div>
+              <div class="form-check col-2">
+                <input class="form-check-input" type="checkbox" value="" formControlName="correct">
+                <label class="form-check-label"> Wahr </label>
+              </div>
+              <div class="form-floating col-3 col-md-2 m-3">
+                <input type="text" class="form-control" formControlName="points">
+                <label>Punkte</label>
+                <div *ngIf="answer.get('points')?.invalid && answer.get('points')?.touched" class="text-danger">
+                  Bitte geben Sie Anzal der Punkte für diese Antwort ein.
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary col-5 col-lg-2 mx-3 mb-2" (click)="removeAnswer(answer?.value.id ,i)">Option
+                entfernen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm me-3" (click)="addAnswer()">Antwort hinzufügen</button>
+    </div>
+
+    <!-- HTML-Code für Wahr/Falsch -->
+    <div *ngIf="questionForm.get('type')?.value === 'TRUE_FALSE'">
+      <p><strong>Frage:</strong> {{ questionForm.value?.text }}</p>
+      <div formArrayName="answers">
+        <div *ngFor="let answer of answers?.controls; let i = index">
+          <div [formGroupName]="i" class="container card m-2 shadow-lg">
+            <div class="row align-items-center">
+              <div class="form-floating col-8 col-md-6 col-lg-4 m-3">
+                <input type="text" class="form-control" formControlName="text">
+                <label>Frage: {{ i+1 }}</label>
+              </div>
+              <div class="form-check col-2">
+                <input class="form-check-input" type="checkbox" value="" formControlName="correct">
+                <label class="form-check-label"> Richtig </label>
+              </div>
+              <div class="form-floating col-3 col-md-2 m-3">
+                <input type="text" class="form-control" formControlName="points">
+                <label>Punkte</label>
+                <div *ngIf="answer.get('points')?.invalid && answer.get('points')?.touched" class="text-danger">
+                  Bitte geben Sie Anzal der Punkte für diese Antwort ein.
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary col-5 col-lg-2 mx-3 mb-2" (click)="removeAnswer(answer?.value.id ,i)">Option
+                entfernen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm mx-3" (click)="addAnswer()">Frage hinzufügen</button>
+    </div>
+
+    <!-- HTML-Code für Fill in the Blank -->
+    <div *ngIf="questionForm.get('type')?.value === 'FILL_IN_THE_BLANK'">
+      <div class="form-floating col-11 m-3">
+        <textarea class="form-control" rows="5" formControlName="text"></textarea>
+        <label class="form-label">Satz oder Absatz mit fehlenden Wörtern:</label>
+      </div>
+      <form [formGroup]="pointsForm">
+        <div class="form-floating col-8 col-md-6 m-3">
+          <input type="text" class="form-control" formControlName="points">
+          <label>Punkte für jede lücke</label>
+
+          <div *ngIf="pointsForm.get('points')?.invalid && pointsForm.get('points')?.touched" class="text-danger">
+            Bitte geben Sie Anzal der Punkte für jede Lücke ein.
+          </div>
+        </div>
+      </form>
+      <div formArrayName="answers">
+        <div *ngFor="let answer of answers?.controls; let i = index">
+          <div [formGroupName]="i" class="container card m-2 p-2 shadow-lg">
+            <div class="row align-items-center">
+              <div class="form-floating col-10 col-md-6 m-2">
+                <input type="text" class="form-control" formControlName="text">
+                <label>Lücken: {{ i+1 }}</label>
+              </div>
+              <button type="button" class="btn btn-secondary col-7 col-md-4 mx-3 " (click)="removeAnswer(answer?.value.id ,i)">Lücke/n
+                entfernen
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-secondary btn-sm me-3" (click)="addAnswer()">Antwort hinzufügen</button>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions>
+    <button type="button" class="btn btn-danger mx-2" (click)="onClose()">abbrechen </button>
+    <button type="button" class="btn btn-success mx-1" (click)="saveQuestion()">Speichern </button>
+  </mat-dialog-actions>
+</div>

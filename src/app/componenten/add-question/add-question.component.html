@@ -1,0 +1,136 @@
+<div class="card my-3 shadow-lg">
+  <div class="card-header text-bg-warning">
+    <h2>Frage hinzufügen:</h2>
+  </div>
+    <div class="card-body container text-bg-light" >
+    <form [formGroup]="questionForm">
+      <div class="form-floating col-10 col-lg-6 mb-2">
+        <select class="form-select shadow" id="floatingSelect" aria-label="Floating label select example" formControlName="type">
+          <option *ngFor="let type of questionTypeValues" [value]="type.key">{{ type.value }}</option>
+        </select>
+        <label for="floatingSelect">type</label>
+      </div>
+
+        <!-- HTML-Code für Multiple Choice -->
+        <div *ngIf="questionForm.get('type')?.value === 'MULTIPLE_CHOICE'">
+          <div class="form-floating col-10 col-lg-6 mb-2">
+            <input type="text" class="form-control shadow" formControlName="text">
+            <label>Frage</label>
+            <div *ngIf="questionForm.get('text')?.invalid && questionForm.get('text')?.touched" class="text-danger">
+              Bitte geben Sie die Frage ein.
+            </div>
+          </div>
+          <div formArrayName="answers">
+              <div *ngFor="let answer of answers.controls; let i = index">
+                <div [formGroupName]="i" class="container my-4">
+                  <div class="row align-items-center">
+                    <div class="form-floating col-10 col-sm-9 col-md-8 col-lg-6">
+                      <input type="text" class="form-control shadow" formControlName="text">
+                      <label>Antwortmöglichkeiten</label>
+                      <div *ngIf="answer.get('text')?.invalid && answer.get('text')?.touched" class="text-danger">
+                        Bitte geben Sie die Antwortmöglichkeit ein.
+                      </div>
+                    </div>
+                    <div class="form-check col-2">
+                      <input class="form-check-input shadow" type="checkbox" value="" formControlName="correct">
+                      <label class="form-check-label" > Richtig </label>
+                    </div>
+                    <div class="form-floating col-5 col-md-3 col-lg-2">
+                      <input type="number" class="form-control shadow" formControlName="points">
+                      <label>Punkte</label>
+                      <div *ngIf="answer.get('points')?.invalid && answer.get('points')?.touched" class="text-danger">
+                        Bitte geben Sie eine Zahl ein.
+                      </div>
+                    </div>
+                    <button type="button" class="btn btn-danger shadow col-6 col-sm-4 col-lg-2" (click)="removeAnswer(i)">Option entfernen</button>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col">
+            <button type="button" class="btn btn-secondary btn-sm shadow mb-2" (click)="addAnswer()">Antwort hinzufügen</button>
+          </div>
+          <button type="button" class="btn btn-success shadow" (click)="addQuestion()">Frage speichern</button>
+        </div>
+
+        <!-- HTML-Code für Wahr/Falsch -->
+        <div *ngIf="questionForm.get('type')?.value === 'TRUE_FALSE'">
+          <div class="mx-2 mt-3">
+            <h3>Entscheide, ob die Aussage wahr oder falsch ist.</h3>
+          </div>
+            <div formArrayName="answers">
+                <div *ngFor="let answer of answers.controls; let i = index">
+                  <div [formGroupName]="i" class="container my-4">
+                    <div class="row align-items-center">
+                      <div class="form-floating col-10 col-sm-9 col-md-8 col-lg-6">
+                        <input type="text" class="form-control shadow" formControlName="text">
+                        <label>Frage eingeben</label>
+                        <div *ngIf="answer.get('text')?.invalid && answer.get('text')?.touched" class="text-danger">
+                          Bitte geben Sie die Frage ein.
+                        </div>
+                      </div>
+                      <div class="form-check col-2">
+                        <input class="form-check-input shadow" type="checkbox" value=""  formControlName="correct">
+                        <label class="form-check-label"> Richtig </label>
+                      </div>
+                      <div class="form-floating col-5 col-md-3 col-lg-2">
+                        <input type="text" class="form-control shadow" formControlName="points">
+                        <label>Punkte</label>
+                        <div *ngIf="answer.get('points')?.invalid && answer.get('points')?.touched" class="text-danger">
+                          Bitte geben Sie Anzal der Punkte für diese Antwort ein.
+                        </div>
+                      </div>
+                    <button type="button" class="btn btn-danger shadow col-6 col-sm-4 col-lg-2" (click)="removeAnswer(i)">Option entfernen</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          <div class="col">
+            <button type="button" class="btn btn-secondary btn-sm shadow mb-2" (click)="addAnswer()">Frage hinzufügen</button>
+          </div>
+          <button type="button" class="btn btn-success shadow" (click)="addQuestion()">Fragen speichern</button>
+        </div>
+
+
+      <!-- HTML-Code für Fill in the Blank -->
+      <div *ngIf="questionForm.get('type')?.value === 'FILL_IN_THE_BLANK'">
+        <div class="form-floating col-12 col-lg-9 col-xxl-8">
+          <textarea class="form-control shadow" rows="3" formControlName="text"></textarea>
+          <label class="form-label">Satz oder Absatz mit fehlenden Wörtern:</label>
+          <div *ngIf="questionForm.get('text')?.invalid && questionForm.get('text')?.touched" class="text-danger">
+            Bitte geben Sie Satz oder Absatz mit fehlenden Wörtern ein.
+          </div>
+        </div>
+        <form [formGroup]="pointsForm">
+          <div class="form-floating col-7 col-md-5 col-lg-3 m-3">
+            <input type="text" class="form-control shadow" formControlName="points">
+            <label>Punkte für jede lücke</label>
+            <div *ngIf="pointsForm.get('points')?.invalid && pointsForm.get('points')?.touched" class="text-danger">
+              Bitte geben Sie Anzal der Punkte für jede Lücke ein.
+            </div>
+          </div>
+        </form>
+        <div formArrayName="answers">
+          <div *ngFor="let answer of answers.controls; let i = index">
+            <div [formGroupName]="i" class="container my-3">
+              <div class="row align-items-center">
+                <div class="form-floating col-7 col-md-5 mb-3">
+                  <input type="text" class="form-control shadow" formControlName="text">
+                  <label>Lücke {{ i + 1 }}:</label>
+                  <div *ngIf="answer.get('text')?.invalid && answer.get('text')?.touched" class="text-danger">
+                    Bitte geben Sie die Lücke ein.
+                  </div>
+                </div>
+                <button type="button" class="btn btn-danger col-5 col-md-3 col-lg-2 shadow" (click)="removeAnswer(i)">Lücke entfernen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col">
+          <button type="button" class="btn btn-secondary btn-sm shadow mb-2" (click)="addAnswer()">Lücke hinzufügen</button>
+        </div>
+        <button type="button" class="btn btn-success shadow " (click)="addQuestion()">Fragen speichern</button>
+      </div>
+    </form>
+</div>
+</div>

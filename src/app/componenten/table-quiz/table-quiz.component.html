@@ -1,0 +1,49 @@
+<div class="mx-5 border col-11">
+  <div class="m-3 col-4">
+    <input type="text" class="form-control" placeholder="Filter" (keyup)="applyFilter($event)">
+  </div>
+
+  <table class="table table-hover">
+    <thead >
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Fach</th>
+      <th scope="col">Titel</th>
+      <th scope="col">Prüfer</th>
+      <th scope="col">Anzahl der Fragen</th>
+      <th scope="col"></th>
+    </tr>
+    </thead>
+
+    <tbody *ngIf="filteredQuizzes && filteredQuizzes.length > 0; else emptyTable">
+    <tr *ngFor="let quiz of filteredQuizzes; let i = index">
+      <th scope="row">{{ quiz.id }}</th>
+      <td>{{ quiz.subject }}</td>
+      <td>{{ quiz.title }}</td>
+      <td>{{ quiz.creator }}</td>
+      <td>{{ quiz.questions.length }}</td>
+
+      <td *ngIf="editQuiz">
+        <div class="form-floating col-6 mb-3" *ngIf="!isPasswordCorrect[i]">
+          <input type="password" class="form-control" [(ngModel)]="enteredPassword[i]" (input)="checkPassword(i, quiz.password)">
+          <label>Passwort</label>
+        </div>
+        <div *ngIf="isPasswordCorrect[i]">
+          <button [routerLink]="['/edit-quiz', quiz.id]" type="button" class="btn btn-warning mx-3">ändern</button>
+          <button type="button" class="btn btn-danger" (click)="removeQuiz(quiz.id)">entfernen</button>
+        </div>
+      </td>
+      <td *ngIf="!editQuiz">
+        <button [routerLink]="['/start-quiz', quiz.id]" type="button" class="btn btn-success">Starten</button>
+      </td>
+    </tr>
+    </tbody>
+
+    <ng-template #emptyTable>
+      <tr>
+        <td colspan="6" style="text-align: center;">Die Tabelle ist leer.</td>
+      </tr>
+    </ng-template>
+  </table>
+
+</div>

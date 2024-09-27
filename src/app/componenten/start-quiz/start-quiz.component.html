@@ -1,0 +1,189 @@
+<div class="container" *ngIf="quizForm?.value">
+  <div class="text-center text-primary m-3">
+    <h2>{{ quizForm.value.title }}</h2>
+  </div>
+  <div class="card">
+    <div class="text-bg-primary p-3">
+      <div class="row align-items-start text-center mt-3">
+        <div class="col-sm col-xs-10">
+          <p><strong>Fach:</strong> {{ quizForm.value.subject }}</p>
+        </div>
+        <div class="col-sm col-xs-10">
+          <p><strong>Prüfer:</strong> {{ quizForm.value?.creator }}</p>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="check()" class="text-center">
+      <div *ngIf="userTotalPoints() >= (quizForm?.value?.points/2);" class="text-success p-3">
+        <h2>Du hast {{ userTotalPoints() }} punkte von {{ quizForm.value.points }} erreicht.</h2>
+        <h2>BESTANDEN</h2>
+      </div>
+      <div *ngIf="userTotalPoints() < quizForm?.value?.points/2" class="text-danger p-3">
+        <h2>Du hast nur {{ userTotalPoints() }} punkte von {{ quizForm.value.points }} erreicht.</h2>
+        <h2>((NICHT BESTANDEN))</h2>
+      </div>
+    </div>
+    <form [formGroup]="quizForm">
+      <div formArrayName="questions">
+        <div *ngFor="let question of quizForm.value?.questions; let i = index" [formGroupName]="i">
+          <div>
+            <!--  START MULTIPLE_CHOICE -->
+            <div class="card m-3" *ngIf="question.type === 'MULTIPLE_CHOICE'">
+              <div class="card-header text-bg-primary">
+                <div *ngIf="check()">
+                    <span *ngIf="isAllCorrect(i)"
+                          class="correct-sign ">✓✓✓✓✓Deine Antwort/Antworten ist/sind richtig  {{ question.points }}
+                      /{{ question.points }} punkte  ✓✓✓✓ </span>
+                  <span *ngIf="!isAllCorrect(i)" class="incorrect-sign">✗✗✗✗✗✗✗✗✗ Leider ist/sind deine Antwort/Antworten falsch. 0/{{ question.points }}</span>
+                </div>
+                <h2><strong>Frage {{ i + 1 }}:</strong> {{ question.text }} </h2>
+              </div>
+              <div class="card-body text-bg-light">
+                <div class="row">
+                  <div class="col-auto">
+                    <div *ngIf="check()">
+                      <h6>deine Antworten</h6>
+                      <div class="form-check" *ngFor="let answer of question.answers; let j = index">
+                        <input class="form-check-input shadow" type="checkbox" value=""
+                               [checked]="getFormControl(['questions', i, 'userAnswers', j, 'correct']).value"
+                               disabled>
+                        <label class="form-check(-label"> {{ answer.text }} </label>
+                      </div>
+                    </div>
+                    <div *ngIf="!check()">
+                      <div class="form-check" *ngFor="let answer of question.answers; let j = index">
+                        <input class="form-check-input shadow" type="checkbox" value=""
+                               [formControl]="getFormControl(['questions', i, 'userAnswers', j, 'correct'])">
+                        <label class="form-check-label"> {{ answer.text }} </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col border-start" *ngIf="check()">
+                    <h6>Richtige Antworten</h6>
+                    <div *ngFor="let answer of question.answers; let j = index">
+                      <input class="form-check-input shadow" type="checkbox" [checked]="answer.correct"
+                             aria-label="..." disabled>
+                      <span *ngIf="isCorrect(i, j)" class="correct-sign text-success">✓</span>
+                      <span *ngIf="!isCorrect(i, j)" class="incorrect-sign">✗</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--  ENDE MULTIPLE_CHOICE -->
+
+
+            <!--  START TRUE_FALSE -->
+            <div class="card m-3" *ngIf="question.type === 'TRUE_FALSE'">
+              <div class="card-header text-bg-primary">
+                <div *ngIf="check()">
+                    <span *ngIf="isAllCorrect(i)"
+                          class="correct-sign">✓✓✓✓✓Deine Antwort ist richtig  {{ question.points }}
+                      /{{ question.points }} punkte  ✓✓✓✓ </span>
+                  <span *ngIf="isAllIncorrect(i)" class="incorrect-sign">✗✗✗✗✗✗✗✗✗ Leider ist/sind deine Antwort/Antworten falsch. 0/{{ question.points }}</span>
+                  <span *ngIf="!isAllIncorrect(i) && !isAllCorrect(i)" class="partial-sign"> deine Antwort/Antworten ist/sind teilweise richtig. {{ userQuestionPoints(i) }}
+                    /{{ question.points }} punkte</span>
+                </div>
+                <h2><strong>Frage {{ i + 1 }}:</strong> Entscheide, welche der Aussagen wahr sind.</h2>
+              </div>
+              <div class="card-body text-bg-light">
+                <div class="row">
+                  <div class="col-auto">
+                    <div *ngIf="check()">
+                      <h6>deine Antworten</h6>
+                      <div class="form-check" *ngFor="let answer of question.answers; let j = index">
+                        <input class="form-check-input shadow" type="checkbox" value=""
+                               [checked]="getFormControl(['questions', i, 'userAnswers', j, 'correct']).value"
+                               disabled>
+                        <label class="form-check-label"> {{ answer.text }} </label>
+                      </div>
+                    </div>
+                    <div *ngIf="!check()">
+                      <div class="form-check" *ngFor="let answer of question.answers; let j = index">
+                        <input class="form-check-input shadow" type="checkbox" value=""
+                               [formControl]="getFormControl(['questions', i, 'userAnswers', j, 'correct'])">
+                        <label class="form-check-label"> {{ answer.text }} </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col border-start" *ngIf="check()">
+                    <h6>Richtige Antworten</h6>
+                    <div *ngFor="let answer of question.answers; let j = index">
+                      <input class="form-check-input shadow" type="checkbox" [checked]="answer.correct"
+                             aria-label="..." disabled>
+                      <span *ngIf="isCorrect(i, j)" class="correct-sign text-success">✓</span>
+                      <span *ngIf="!isCorrect(i, j)" class="incorrect-sign">✗</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--  ENDE TRUE_FALSE -->
+
+            <!--  START FILL_IN_THE_BLANK -->
+            <div class="card m-3" *ngIf="question.type === 'FILL_IN_THE_BLANK'">
+              <div class="card-header text-bg-primary">
+                <div *ngIf="check()">
+                    <span *ngIf="isAllCorrect(i)"
+                          class="correct-sign">✓✓✓✓✓Deine Antwort/Antworten ist/sind richtig.  {{ question.points }}
+                      /{{ question.points }} punkte  ✓✓✓✓ </span>
+                  <span *ngIf="isAllIncorrect(i)" class="incorrect-sign">✗✗✗✗✗✗✗✗✗ Leider ist/sind deine Antwort/Antworten falsch. 0/{{ question.points }}</span>
+                  <span *ngIf="!isAllIncorrect(i) && !isAllCorrect(i)" class="partial-sign"> deine Antwort/Antworten ist/sind teilweise richtig. {{ userQuestionPoints(i) }}
+                    /{{ question.points }}</span>
+                </div>
+                <h2><strong>Frage {{ i + 1 }}:</strong> Ergänze den fehlenden Teil des Satzes, indem du die richtige
+                  Antwort einfügst.</h2>
+              </div>
+              <div class="card-body text-bg-light">
+                <h3>{{ question.text }}</h3>
+                <div class="container" *ngIf="check()">
+                  <div class="row">
+                    <div class="form-floating col-10 col-md-5 col-lg-4 col-xl-3 m-2"
+                         *ngFor="let blank of stringToArray(question.answers[0].text); let j = index">
+                      <input type="text" class="form-control shadow"
+                             [value]="this.getBlankAnswers(i,j)" disabled>
+                      <label>
+                        Lücke {{ j + 1 }}:
+                        <span *ngIf="isCorrect(i, j)" class="correct-sign text-success">✓ Richtig</span>
+                        <span *ngIf="!isCorrect(i, j)" class="incorrect-sign">✗ Falsch das Richtige Antwort ist '{{ blank }}'</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="container" *ngIf="!check()">
+                  <div class="row" formArrayName="blanks">
+                    <div class="form-floating col-10 col-md-5 col-lg-4 col-xl-3 m-2"
+                         *ngFor="let blank of getBlanks(i).controls; let j = index" [formGroupName]="j">
+                      <input type="text" class="form-control shadow" (change)="saveBlankResponse($event, i,j)"
+                             [value]="getBlankAnswers(i,j) ?? ''">
+                      <label>Lücke {{ j + 1 }}:</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--  ENDE FILL_IN_THE_BLANK -->
+
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <div *ngIf="!check()">
+      <button type="button" class="btn btn-success shadow" (click)="checkIt()">Abgeben</button>
+    </div>
+    <div *ngIf="check()">
+      <div class="text-center">
+        <div *ngIf="userTotalPoints() >= quizForm.value.points/2" class="text-bg-success">
+          <h6>Du hast {{ userTotalPoints() }} punkte von {{ quizForm.value.points }} erreicht.</h6>
+          <h6>BESTANDEN</h6>
+        </div>
+        <div *ngIf="userTotalPoints() < quizForm.value.points/2" class="text-bg-danger">
+          <h6>Du hast nur {{ userTotalPoints() }} punkte von {{ quizForm.value.points }} erreicht.</h6>
+          <h6>((NICHT BESTANDEN))</h6>
+        </div>
+      </div>
+      <button routerLink="/select-quiz" type="button" class="btn btn-primary shadow">Neues Quiz starten</button>
+    </div>
+  </div>
+</div>

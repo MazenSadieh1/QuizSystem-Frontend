@@ -1,0 +1,11 @@
+.correct-sign {
+  color: white;
+  font-size: 1.0em;
+  margin-left: 10px;
+}
+
+.incorrect-sign {
+  color: red;
+  font-size: 1.0em;
+  margin-left: 10px;
+}

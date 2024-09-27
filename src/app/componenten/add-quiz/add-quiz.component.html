@@ -1,0 +1,52 @@
+<div class="container">
+  <h1><strong>Quiz-hinzufügen</strong></h1>
+  <form [formGroup]="quizForm">
+    <div class="card">
+      <div class="card-header text-bg-primary">
+        <h2>Quiz-Daten:</h2>
+      </div>
+      <div class="card-body text-bg-light">
+        <div class="row">
+          <div class="form-floating col col-10 col-lg-5 mb-3 align-self-center">
+            <select class="form-select shadow " id="floatingSelect1" aria-label="Floating label select example"
+                    formControlName="subject">
+              <option *ngFor="let subject of subjects" [value]="subject.key">{{ subject.value }}</option>
+            </select>
+            <label for="floatingSelect1">Fach</label>
+            <div *ngIf="quizForm.get('subject')?.invalid && quizForm.get('subject')?.touched" class="text-danger">
+              Bitte wählen Sie einen Fach aus.
+            </div>
+          </div>
+          <div class="form-floating col col-10 col-lg-5 mb-3 align-self-center">
+            <input type="text" class="form-control shadow" formControlName="title">
+            <label>Titel des Quizzes</label>
+            <div *ngIf="quizForm.get('title')?.hasError('required') && quizForm.get('title')?.touched"
+                 class="text-danger">
+              Bitte geben Sie den Titel des Quizzes ein.
+            </div>
+            <div *ngIf="quizForm.get('title')?.hasError('titleNotUnique') && quizForm.get('title')?.touched"
+                 class="text-danger">
+              Titel ist bereits vergeben. Bitte wählen Sie einen anderen Titel.
+            </div>
+          </div>
+          <div class="form-floating col col-10 col-lg-5 mb-3 align-self-center">
+            <input type="text" class="form-control shadow" formControlName="creator">
+            <label>Name des Prüfers</label>
+            <div *ngIf="quizForm.get('creator')?.invalid && quizForm.get('creator')?.touched" class="text-danger">
+              Bitte geben Sie den Namen des Prüfers ein.
+            </div>
+          </div>
+          <div class="form-floating col col-10 col-lg-5 mb-3 align-self-center">
+            <input type="password" class="form-control shadow" formControlName="password">
+            <label>Passwort</label>
+            <div *ngIf="quizForm.get('password')?.invalid && quizForm.get('password')?.touched" class="text-danger">
+              Bitte geben Sie ein Passwort ein.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+<button type="button" class="btn btn-success me-3 mt-2 shadow" (click)="onSaveQuiz()">Weiter</button>
+<button routerLink="/" type="button" class="btn btn-danger mt-2 shadow">verlassen</button>
+</div>

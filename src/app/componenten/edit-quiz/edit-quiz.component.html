@@ -1,0 +1,90 @@
+<div class="container">
+  <h1><strong>Quiz-bearbeiten</strong></h1>
+
+  <h2>Quiz Informationen:</h2>
+  <div class="mb-3 ">
+    <div *ngIf="quizForm">
+      <div class="shadow-lg">
+        <h2 class="p-4 text-bg-primary"><strong>Quiz Daten</strong></h2>
+        <form [formGroup]="quizForm">
+          <div class="container text-bg-light py-4">
+            <div class="row justify-content-md-center">
+              <div class="form-floating col-md-6 col-lg-4 mb-3 align-self-center">
+                <select class="form-select" id="floatingSelect1" aria-label="Floating label select example"
+                        formControlName="subject">
+                  <option *ngFor="let subject of subjects" [value]="subject.key">{{ subject.value }}</option>
+                </select>
+                <label for="floatingSelect1">type</label>
+                <div *ngIf="quizForm.get('subject')?.invalid && quizForm.get('subject')?.touched" class="text-danger">
+                  Bitte wählen Sie einen Fach aus.
+                </div>
+              </div>
+              <div class="form-floating col-md-6 col-lg-4  mb-3 align-self-center">
+                <input type="text" class="form-control" formControlName="title">
+                <label>Titel des Quizzes</label>
+                <div *ngIf="quizForm.get('title')?.hasError('required') && quizForm.get('title')?.touched"
+                     class="text-danger">
+                  Bitte geben Sie den Titel des Quizzes ein.
+                </div>
+                <div *ngIf="quizForm.get('title')?.hasError('titleNotUnique') && quizForm.get('title')?.touched"
+                     class="text-danger">
+                  Titel ist bereits vergeben. Bitte wählen Sie einen anderen Titel.
+                </div>
+              </div>
+              <div class="form-floating col mb-3 align-self-center">
+                <input type="text" class="form-control" formControlName="creator">
+                <label>Name des Prüfers</label>
+                <div *ngIf="quizForm.get('creator')?.invalid && quizForm.get('creator')?.touched" class="text-danger">
+                  Bitte geben Sie den Namen des Prüfers ein.
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div *ngIf="quizForm?.value?.questions && quizForm?.value?.questions.length > 0">
+        <div class="container my-4 " *ngFor="let question of quizForm?.value?.questions; let i = index">
+
+          <div class="card col-12 col-lg-9 shadow-lg" >
+            <div class="row card-header text-bg-primary">
+              <div class="col-5">
+                <h2><strong>Frage {{ i + 1 }}:</strong></h2>
+              </div>
+              <div class="col-10">
+                <p><strong>Type:</strong> {{ question.type }}</p>
+              </div>
+            </div>
+            <div class="row card-body text-bg-light">
+              <div class="col-12 ">
+                <h3>{{ question.text }}</h3>
+                <div class="m-2" *ngIf="question.answers && question.answers.length > 0">
+                  <div *ngFor="let answer of question.answers; let j = index">
+                    <p><strong>{{ j + 1 }}):</strong> {{ answer.text }} ({{ answer.correct ? 'richtig' : 'falsch' }})
+                      Anzahl der Punkte: {{ answer.points }}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-5 col-md-4 col-lg-3 col-xl-2">
+                  <button type="button" class="btn btn-outline-danger btn-sm" (click)="removeQuestion(question.id, i)">
+                    Frage entfernen
+                  </button>
+                </div>
+                <div class="col-5 col-md-4 col-lg-3 col-xl-2 ">
+                  <button type="button" class="btn btn-outline-warning btn-sm" (click)="toggleDiv(question)">Frage bearbeiten
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-add-question (questionAdded)="addQuestionToQuiz($event)"></app-add-question>
+
+  <button routerLink="/select-quiz" type="button" class="btn btn-success me-3 mb-5 shadow-lg" (click)="onSaveQuiz()">Quiz speichern</button>
+  <button routerLink="/" type="button" class="btn btn-danger mb-5 shadow-lg">verlassen</button>
+</div>
